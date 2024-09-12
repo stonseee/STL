@@ -2,6 +2,7 @@
 #include<array>
 #include<vector>
 #include<list>
+#include<iterator>
 using std::cin;
 using std::cout;
 using std::endl;
@@ -13,6 +14,7 @@ using std::endl;
 //#define STL_VECTOR
 //#define VECTOR_FLEXABILITY
 //#define LIST_FLEXABILITY
+#define STL_LIST
 
 template<typename T>void vector_info(const std::vector<T>& vec);
 
@@ -58,6 +60,27 @@ void main()
 	cout << endl;
 	vector_info(vec);
 
+	vec.insert(vec.begin() + 4, { 111, 222, 333 });
+	for (int i : vec)cout << i << tab; cout << endl;
+
+	int index;
+	int count;
+	int value;
+	cout << "index "; cin >> index;
+	cout << "count "; cin >> count;
+	cout << "value "; cin >> value;
+
+	//vec.insert(vec.begin() + index, value);
+	vec.insert(vec.begin() + index, count, value);
+	for (int i : vec)cout << i << tab; cout << endl;
+	vector_info(vec);
+
+	cout << "index "; cin >> index;
+	cout << "count "; cin >> count;
+	vec.erase(vec.begin() + index, vec.begin() + index + count);
+	for (int i : vec)cout << i << tab; cout << endl;
+	vector_info(vec);
+
 #endif // STL_VECTOR	
 
 #ifdef VECTOR_FLEXABILITY
@@ -81,6 +104,7 @@ void main()
 
 	vec.erase(vec.begin() + 2);      //работает
 	//vec.erase(it + 2);             //не работает
+	//vec.erase(it);                    //не работает
 	for (int i = 0; i < vec.size(); i++)
 	{
 		cout << vec[i] << tab;
@@ -114,6 +138,35 @@ void main()
 
 
 #endif // LIST_FLEXABILITY
+
+#ifdef STL_LIST
+	std::list<int> list = { 3, 5, 8, 13, 21 };
+	for (std::list<int>::iterator it = list.begin(); it != list.end(); ++it)cout << *it << tab; cout << endl;
+
+	cout << list.front() << endl;
+	cout << list.back() << endl;
+	list.push_front(2);
+	list.push_back(34);
+	list.emplace_front(1);
+	for (int i : list)cout << i << tab; cout << endl;
+
+	int index;
+	int value;
+	do
+	{
+		cout << "index "; cin >> index;
+		if (index >= list.size())cout << "error: out of range" << endl;
+	} while (index >= list.size());
+	cout << "value "; cin >> value;
+
+	std::list<int>::iterator position;
+	position = list.begin();
+
+	//for (int i = 0; i < index; i++)	position++;
+	std::advance(position, index);
+	list.insert(position, value);
+	for (int i : list)cout << i << tab; cout << endl;
+#endif // STL_LIST
 
 
 }
