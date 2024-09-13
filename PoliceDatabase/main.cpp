@@ -24,6 +24,31 @@ void print(std::map<std::string, std::vector<std::string>>& database)
 	}
 }
 
+void print_personal(std::map<std::string, std::vector<std::string>>& database)
+{
+	std::string insertBufferPlates;
+	cout << "Insert PLATES: ";
+	cin >> insertBufferPlates;	
+	int sw = 0;
+		
+	for (std::map<std::string, std::vector<std::string>>::iterator mapItr = database.begin(); mapItr != database.end(); ++mapItr)
+	{
+		if ((*mapItr).first == insertBufferPlates)
+		{
+			cout << (*mapItr).first << ":  ";
+			for (std::vector<std::string>::iterator vecItr = mapItr->second.begin(); vecItr != mapItr->second.end(); ++vecItr)
+			{
+				cout << *vecItr;
+				if (*vecItr == mapItr->second.back())cout << ";";
+				else cout << ", ";
+			}
+			++sw;			
+		}		
+	}
+	
+	if(sw == 0)cout << "No vehicle found!!" << endl;
+}
+
 void add(std::map<std::string, std::vector<std::string>>& database)
 {
 	std::string insertBufferPlates;
@@ -54,9 +79,10 @@ void main()
 	{
 		std::pair<std::string, std::vector<std::string>>("LWYRUP", {"Speeding"}),
 		std::pair<std::string, std::vector<std::string>>("THE CAPN", {"Too low", "Too slow"}),
-		//std::pair<std::string, std::vector<std::string>>("o000oo199", {"Эксгибиционизм", "Туз червей"})
+		std::pair<std::string, std::vector<std::string>>("o000o199", {"Эксгибиционизм", "Туз червей"})
 	};
 
-	add(database);	
-	print(database);
+	//add(database);	
+	//print_personal(database);	
+	//print(database);
 }
