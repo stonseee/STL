@@ -1,3 +1,3 @@
-THECAPN:        Too low,    Too slow,    Too high;
-LWYRUP:        Breaking the law;
-09QSBN:        Meth manufacturing,    Exhibitionism;
+THE_CAPN:    Too low,  Too slow,  Too high;
+LWYRUP:    Breaking the law;
+09Q_SBN:    Meth manufacturing,  Exhibitionism;

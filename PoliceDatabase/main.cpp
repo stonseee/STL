@@ -125,11 +125,8 @@ void print(std::map<std::string, std::vector<std::string>>& database)
 	}
 }
 
-void print_personal(std::map<std::string, std::vector<std::string>>& database)
-{
-	std::string insertBufferPlates;
-	cout << "Insert PLATES: ";
-	cin >> insertBufferPlates;	
+void print_personal(std::map<std::string, std::vector<std::string>>& database, std::string& insertBufferPlates)
+{	
 	int sw = 0;
 		
 	for (std::map<std::string, std::vector<std::string>>::iterator mapItr = database.begin(); mapItr != database.end(); ++mapItr)
@@ -148,7 +145,6 @@ void print_personal(std::map<std::string, std::vector<std::string>>& database)
 	}
 	
 	cout << endl;
-
 	if(sw == 0)cout << "No vehicle found!!" << endl;
 }
 
@@ -228,7 +224,7 @@ void load(std::map<std::string, std::vector<std::string>>& database, const std::
 
 			insertFelony = buffer;
 			insertFelony.resize(ctr);
-			symbol_check(insertFelony);	
+			symbol_check(insertFelony);				
 			add(database, insertPlates, insertFelony);			
 
 			for (int i = 0; i < ctr; ++i)
@@ -253,7 +249,7 @@ void load(std::map<std::string, std::vector<std::string>>& database, const std::
 					pop_front(buffer);
 				}
 
-			    symbol_check(insertFelony);			    
+			    symbol_check(insertFelony);	
 				add(database, insertPlates, insertFelony);				
 				--felonyCtr;
 			}
@@ -310,7 +306,10 @@ void main()
 		if (input == "personal")
 		{
 			cout << "----------------------------------------------" << endl;
-			print_personal(database);
+			
+			cout << "Input PLATES: ";
+			cin >> plates;
+			print_personal(database, plates);
 			cout << "----------------------------------------------" << endl;
 		}
 
@@ -320,6 +319,7 @@ void main()
 			cout << "Input FELONY TYPE: "; cin >> felony;
 			cout << "----------------------------------------------" << endl;
 			add(database, plates, felony);
+			print_personal(database, plates);
 			cout << "----------------------------------------------" << endl;
 		}
 
@@ -327,31 +327,18 @@ void main()
 		{
 			cout << "----------------------------------------------" << endl;
 			save(database, "FILE.txt");
+			database.clear();
+			load(database, "FILE.txt");
 			cout << "----------------------------------------------" << endl;
 		}
 
 		if (input == "load")
 		{
 			cout << "----------------------------------------------" << endl;
+			database.clear();
 			load(database, "FILE.txt");
 			print(database);
 			cout << "----------------------------------------------" << endl;
 		}
-	}
-
-
-	
-
-	//add(database);	
-	//print_personal(database);	
-	//save(database, "FILE.txt");
-	
-	//load(database, "FILE.txt");
-	
-	//add(database, "qwerty", "asdfg");
-
-	/*std::string s = "THE                CAPN";
-	no_space(s);
-	cout << s << endl;*/
-	
+	}	
 }
