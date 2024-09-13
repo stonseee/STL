@@ -10,19 +10,81 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-void delete_space(std::string& str)
+void no_space(std::string& str)
 {
-
-}
-
-void buffer_clear(std::string& str, int ctr)
-{
-	for (int i = 0; i < str.size() - ctr; ++i)
+	int ctr = str.size();
+	for (int i = 0; i < str.size(); ++i)
 	{
-		str[i] = str[i + ctr];
+		if (str[i] == ' ')
+		{
+			--ctr;
+			for (int j = i; j < str.size(); ++j)
+			{
+				str[j] = str[j + 1];
+			}
+		}
 	}
-	str.resize(str.size() - ctr);
+	str.resize(ctr);
+	for (int i = 0; i < str.size(); ++i)
+	{
+		if (str[i] == ' ')
+		{
+			no_space(str);
+		}
+	}
 }
+
+void pop_front(std::string& str)
+{
+	std::string buffer;
+	buffer.resize(str.size() - 1);
+	for (int i = 0; i < str.size() - 1; ++i)
+	{
+		buffer[i] = str[i + 1];			
+	}
+	str = buffer;
+}
+
+//void delete_space(std::string& str)
+//{
+//	int sw = 0;
+//	int ctr = str.size();
+//	for (int i = 0; i < str.size(); ++i)
+//	{
+//		if (sw == 0)
+//		{
+//			if (str[i] == ' ')
+//			{
+//				for (int j = 0; j < ctr; ++j)
+//				{
+//					str[j] = str[j + 1];
+//				}
+//				--ctr;
+//			}
+//			else
+//			{
+//				++sw;
+//			}
+//		}		
+//	}
+//	str.resize(ctr);
+//	for (int i = 0; i < str.size(); ++i)
+//	{
+//		if (str[i] == ' ')
+//		{
+//			delete_space(str);
+//		}
+//	}
+//}
+
+//void buffer_clear(std::string& str, int ctr)
+//{
+//	for (int i = 0; i < str.size() - ctr; ++i)
+//	{
+//		str[i] = str[i + ctr];
+//	}
+//	str.resize(str.size() - ctr);
+//}
 
 void symbol_check(std::string& str)
 {	
@@ -50,7 +112,7 @@ void symbol_check(std::string& str)
 
 void print(std::map<std::string, std::vector<std::string>>& database)
 {
-	for (std::map<std::string, std::vector<std::string>>::iterator mapItr = database.begin(); mapItr != database.end(); ++mapItr)
+	for (std::map<std::string, std::vector<std::string>>::reverse_iterator mapItr = database.rbegin(); mapItr != database.rend(); ++mapItr)
 	{
 		cout << (*mapItr).first << ":  ";
 		for (std::vector<std::string>::iterator vecItr = mapItr->second.begin(); vecItr != mapItr->second.end(); ++vecItr)
@@ -85,21 +147,18 @@ void print_personal(std::map<std::string, std::vector<std::string>>& database)
 		}		
 	}
 	
+	cout << endl;
+
 	if(sw == 0)cout << "No vehicle found!!" << endl;
 }
 
 void add(std::map<std::string, std::vector<std::string>>& database, std::string insertBufferPlates, std::string insertBufferFelony)
 {
-	//std::string insertBufferPlates;
-	//std::string insertBufferFelony;
-	//cout << "Insert PLATES: ";
-	//cin >> insertBufferPlates;
 	symbol_check(insertBufferPlates);
-    //cout << "Insert FELONY: ";
-	//cin >> insertBufferFelony;	
-	symbol_check(insertBufferFelony);
-	int sw = 0;
-	
+	no_space(insertBufferPlates);
+    symbol_check(insertBufferFelony);
+	int sw = 0;	
+
 	for (std::map<std::string, std::vector<std::string>>::iterator mapItr = database.begin(); mapItr != database.end(); ++mapItr)
 	{
 		if ((*mapItr).first == insertBufferPlates)
@@ -115,7 +174,7 @@ void add(std::map<std::string, std::vector<std::string>>& database, std::string 
 void save(std::map<std::string, std::vector<std::string>>& database, const std::string& filename)
 {
 	std::ofstream fout(filename);	
-	for (std::map<std::string, std::vector<std::string>>::iterator mapItr = database.begin(); mapItr != database.end(); ++mapItr)
+	for (std::map<std::string, std::vector<std::string>>::reverse_iterator mapItr = database.rbegin(); mapItr != database.rend(); ++mapItr)
 	{
 		fout << (*mapItr).first << ":  ";
 		for (std::vector<std::string>::iterator vecItr = mapItr->second.begin(); vecItr != mapItr->second.end(); ++vecItr)
@@ -134,66 +193,79 @@ void load(std::map<std::string, std::vector<std::string>>& database, const std::
 	int ctr = 0;
 	int oldCtr = 0;
 	int felonyCtr = 1;
-	char insertPlates[256];
-	char insertFelony[256];
-	std::size_t length = 0;
+	std::string insertPlates;
+	std::string insertFelony;	
 	std::ifstream fin(filename);
 	if (fin.is_open())
 	{		
 		while (!fin.eof())
 		{
 			std::string buffer;
-			//insert.resize(buffer.size());
 			std::getline(fin, buffer);
-			cout << "buffer " << buffer << endl;			
+
 			for (int i = 0; i < buffer.size(); ++i)
 			{
-				if (buffer[i] == ':')ctr = i;
+				if (buffer[i] == ':')ctr = i + 1;
 				if (buffer[i] == ',')felonyCtr++;
 			}
-			cout << "ctr1 " << ctr << endl;
-			cout << "felonyCtr " << felonyCtr << endl;
 			
-			length = buffer.copy(insertPlates, ctr);
-			insertPlates[length] = '\0';		
-
-			cout << "insertPlates " << insertPlates << endl;	
-			
-			++ctr;
-			cout << "ctr2 " << ctr << endl;
-			oldCtr = ctr + 1;
-			cout << "oldCtr " << oldCtr << endl;
-
-			buffer_clear(buffer, ctr - 1);
-
-			cout << "buffer " << buffer << endl;
-
-			if (felonyCtr == 1)
+			insertPlates = buffer;
+			insertPlates.resize(ctr);			
+			symbol_check(insertPlates);
+			no_space(insertPlates);
+				
+			for (int i = 0; i < ctr; ++i)
 			{
-				for (int i = ctr; i < buffer.size(); ++i)
-				{
-					if (buffer[i] == ';')ctr = i;
-				}
-				length = buffer.copy(insertFelony, ctr);
-				insertFelony[length] = '\0';				
-			}			
+				pop_front(buffer);
+			}
 
-			cout << "ctr3 " << ctr << endl;
+			ctr = 0;
+
+			for (int i = buffer.size() - 1; i >= 0; --i)
+			{				
+				if (buffer[i] == ',' || buffer[i] == ';') ctr = i + 1;
+			}
+
+			insertFelony = buffer;
+			insertFelony.resize(ctr);
+			symbol_check(insertFelony);	
+			add(database, insertPlates, insertFelony);			
+
+			for (int i = 0; i < ctr; ++i)
+			{
+				pop_front(buffer);						
+			}
 			
-			//length = buffer.copy(insertFelony, ctr);
-			//insertFelony[length] = '\0';
+			--felonyCtr;
+			
+			while (felonyCtr > 0)
+			{
+				for (int i = buffer.size() - 1; i >= 0; --i)
+				{
+					if (buffer[i] == ',' || buffer[i] == ';') ctr = i + 1;
+				}
 
-			cout << "insertFelony " << insertFelony << endl;
+				insertFelony = buffer;
+				insertFelony.resize(ctr);
+			    
+				for (int i = 0; i < ctr; ++i)
+				{
+					pop_front(buffer);
+				}
 
- 			ctr = 0;
+			    symbol_check(insertFelony);			    
+				add(database, insertPlates, insertFelony);				
+				--felonyCtr;
+			}
+
+			ctr = 0;
 			felonyCtr = 1;
 		}			
 
-		cout << "Позиция курсора на чтение: " << fin.tellg() << endl;
+		database.erase("");
+
 		fin.clear();
-		fin.seekg(0);
-		cout << "Позиция курсора на чтение: " << fin.tellg() << endl;
-		
+		fin.seekg(0);		
 		fin.close();
 	}
 	else
@@ -208,22 +280,78 @@ void main()
 
 	std::map<std::string, std::vector<std::string>> database =
 	{
-		std::pair<std::string, std::vector<std::string>>("LWYRUP", {"Speeding"}),
-		std::pair<std::string, std::vector<std::string>>("THE CAPN", {"Too low", "Too slow"}),
-		std::pair<std::string, std::vector<std::string>>("o000o199", {"Эксгибиционизм", "Туз червей"})
-	};
+		//std::pair<std::string, std::vector<std::string>>("THE_CAPN", {"Too low", "Too slow", "Too high"}),
+		//std::pair<std::string, std::vector<std::string>>("LWYRUP", {"Breaking the law"}),
+		//std::pair<std::string, std::vector<std::string>>("09Q_SBN", {"Meth manufacturing", "Exhibitionism"})
+	};	
+	
+	std::string input;
+	std::string plates;
+	std::string felony;
+
+	while (input != "exit")
+	{
+		cout << "Insert command" << endl;
+		cout << "- \"print\" to read database memory" << endl;
+		cout << "- \"personal\" to get specific information" << endl;
+		cout << "- \"add\" to set felony information" << endl;
+		cout << "- \"save\" to save data changes" << endl;
+		cout << "- \"load\" to upload data file" << endl;
+		cout << "- \"exit\" to get out" << endl;
+		cin >> input;
+
+		if (input == "print")
+		{
+			cout << "----------------------------------------------" << endl;
+			print(database);
+			cout << "----------------------------------------------" << endl;
+		}
+
+		if (input == "personal")
+		{
+			cout << "----------------------------------------------" << endl;
+			print_personal(database);
+			cout << "----------------------------------------------" << endl;
+		}
+
+		if (input == "add")
+		{
+			cout << "Input PLATES: "; cin >> plates;
+			cout << "Input FELONY TYPE: "; cin >> felony;
+			cout << "----------------------------------------------" << endl;
+			add(database, plates, felony);
+			cout << "----------------------------------------------" << endl;
+		}
+
+		if (input == "save")
+		{
+			cout << "----------------------------------------------" << endl;
+			save(database, "FILE.txt");
+			cout << "----------------------------------------------" << endl;
+		}
+
+		if (input == "load")
+		{
+			cout << "----------------------------------------------" << endl;
+			load(database, "FILE.txt");
+			print(database);
+			cout << "----------------------------------------------" << endl;
+		}
+	}
+
+
+	
 
 	//add(database);	
 	//print_personal(database);	
-	//print(database);
 	//save(database, "FILE.txt");
 	
-	load(database, "FILE.txt");
+	//load(database, "FILE.txt");
 	
-	/*char buffer[20];
-	std::string str("Test string...");
-	std::size_t length = str.copy(buffer, 6, 5);
-	buffer[length] = '\0';
-	std::cout << "buffer contains: " << buffer << '\n';*/
+	//add(database, "qwerty", "asdfg");
+
+	/*std::string s = "THE                CAPN";
+	no_space(s);
+	cout << s << endl;*/
 	
 }
