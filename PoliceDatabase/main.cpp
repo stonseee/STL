@@ -1,7 +1,5 @@
 #include<iostream>
-#include<array>
 #include<vector>
-#include<list>
 #include<iterator>
 #include<string>
 #include<map>
@@ -9,30 +7,6 @@
 using std::cin;
 using std::cout;
 using std::endl;
-
-void no_space(std::string& str)
-{
-	int ctr = str.size();
-	for (int i = 0; i < str.size(); ++i)
-	{
-		if (str[i] == ' ')
-		{
-			--ctr;
-			for (int j = i; j < str.size(); ++j)
-			{
-				str[j] = str[j + 1];
-			}
-		}
-	}
-	str.resize(ctr);
-	for (int i = 0; i < str.size(); ++i)
-	{
-		if (str[i] == ' ')
-		{
-			no_space(str);
-		}
-	}
-}
 
 void pop_front(std::string& str)
 {
@@ -44,47 +18,6 @@ void pop_front(std::string& str)
 	}
 	str = buffer;
 }
-
-//void delete_space(std::string& str)
-//{
-//	int sw = 0;
-//	int ctr = str.size();
-//	for (int i = 0; i < str.size(); ++i)
-//	{
-//		if (sw == 0)
-//		{
-//			if (str[i] == ' ')
-//			{
-//				for (int j = 0; j < ctr; ++j)
-//				{
-//					str[j] = str[j + 1];
-//				}
-//				--ctr;
-//			}
-//			else
-//			{
-//				++sw;
-//			}
-//		}		
-//	}
-//	str.resize(ctr);
-//	for (int i = 0; i < str.size(); ++i)
-//	{
-//		if (str[i] == ' ')
-//		{
-//			delete_space(str);
-//		}
-//	}
-//}
-
-//void buffer_clear(std::string& str, int ctr)
-//{
-//	for (int i = 0; i < str.size() - ctr; ++i)
-//	{
-//		str[i] = str[i + ctr];
-//	}
-//	str.resize(str.size() - ctr);
-//}
 
 void symbol_check(std::string& str)
 {	
@@ -150,8 +83,7 @@ void print_personal(std::map<std::string, std::vector<std::string>>& database, s
 
 void add(std::map<std::string, std::vector<std::string>>& database, std::string insertBufferPlates, std::string insertBufferFelony)
 {
-	symbol_check(insertBufferPlates);
-	no_space(insertBufferPlates);
+	symbol_check(insertBufferPlates);	
     symbol_check(insertBufferFelony);
 	int sw = 0;	
 
@@ -207,8 +139,7 @@ void load(std::map<std::string, std::vector<std::string>>& database, const std::
 			
 			insertPlates = buffer;
 			insertPlates.resize(ctr);			
-			symbol_check(insertPlates);
-			no_space(insertPlates);
+			symbol_check(insertPlates);			
 				
 			for (int i = 0; i < ctr; ++i)
 			{
@@ -276,14 +207,15 @@ void main()
 
 	std::map<std::string, std::vector<std::string>> database =
 	{
-		//std::pair<std::string, std::vector<std::string>>("THE_CAPN", {"Too low", "Too slow", "Too high"}),
+		//std::pair<std::string, std::vector<std::string>>("THE CAPN", {"Too low", "Too slow", "Too high"}),
 		//std::pair<std::string, std::vector<std::string>>("LWYRUP", {"Breaking the law"}),
-		//std::pair<std::string, std::vector<std::string>>("09Q_SBN", {"Meth manufacturing", "Exhibitionism"})
+		//std::pair<std::string, std::vector<std::string>>("09Q SBN", {"Meth manufacturing", "Exhibitionism"})
 	};	
 	
 	std::string input;
 	std::string plates;
-	std::string felony;
+	std::string felony;		
+	std::string piece;		
 
 	while (input != "exit")
 	{
@@ -305,20 +237,21 @@ void main()
 
 		if (input == "personal")
 		{
-			cout << "----------------------------------------------" << endl;
-			
-			cout << "Input PLATES: ";
-			cin >> plates;
+			cout << "Input PLATES: "; cin >> plates; getline(cin, piece);
+			plates += piece;
+			cout << "----------------------------------------------" << endl;			
 			print_personal(database, plates);
 			cout << "----------------------------------------------" << endl;
 		}
 
 		if (input == "add")
 		{
-			cout << "Input PLATES: "; cin >> plates;
-			cout << "Input FELONY TYPE: "; cin >> felony;
+			cout << "Input PLATES: "; cin >> plates; getline(cin, piece);
+			plates += piece;
+			cout << "Input FELONY TYPE: "; cin >> felony; getline(cin, piece);
+			felony += piece;
 			cout << "----------------------------------------------" << endl;
-			add(database, plates, felony);
+			add(database, plates, felony);	
 			print_personal(database, plates);
 			cout << "----------------------------------------------" << endl;
 		}
