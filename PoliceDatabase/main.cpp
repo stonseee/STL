@@ -247,11 +247,12 @@ void main()
 		if (input == "add")
 		{
 			cout << "Input PLATES: "; cin >> plates; getline(cin, piece);
-			plates += piece;
+			plates += piece;			
 			cout << "Input FELONY TYPE: "; cin >> felony; getline(cin, piece);
 			felony += piece;
 			cout << "----------------------------------------------" << endl;
 			add(database, plates, felony);	
+			symbol_check(plates);
 			print_personal(database, plates);
 			cout << "----------------------------------------------" << endl;
 		}
