@@ -1,11 +1,12 @@
-﻿#pragma warning (disable: 4236)
+﻿#define _CRT_SECURE_NO_WARNINGS
+#pragma warning (disable: 4236)
 #include<iostream>
+#include<fstream>
 #include<string>
 #include<conio.h>
 #include<map>
 #include<list>
 #include<ctime>
-#include<fstream>
 
 using std::cin;
 using std::cout;
@@ -39,7 +40,7 @@ class Crime
 	//std::string license_plate;
 	int id;
 	std::string place;
-	std::string time;
+	tm time;
 public:
 	/*const std::string& get_license_plate()const
 	{
@@ -57,9 +58,15 @@ public:
 	{
 		return place;
 	}
-	const std::string& get_time()const
+	const std::string get_time()const
 	{
-		return time;
+		//std::string result = asctime(&time);
+		//result.pop_back();
+		//return result;
+		const int SIZE = 256;
+		char formatted[SIZE]{};
+		strftime(formatted, SIZE, "%R %e.%m.%Y", &time);
+		return formatted;
 	}
 	/*void set_license_plate(const std::string& license_plate)
 	{
@@ -75,7 +82,22 @@ public:
 	}
 	void set_time(const std::string& time)
 	{
-		this->time = time;
+		char* time_buffer = new char[time.size() + 1] {};
+		strcpy(time_buffer, time.c_str());
+		
+		int time_elements[5]{};
+		int i = 0;
+		char delimiters[] = ":./ ";
+		for (char* pch = strtok(time_buffer, delimiters); pch; pch = strtok(NULL, delimiters))
+			time_elements[i++] = std::atoi(pch);
+		delete[] time_buffer;
+
+		this->time.tm_hour = time_elements[0];
+		this->time.tm_min = time_elements[1];
+		this->time.tm_mday = time_elements[2];
+		this->time.tm_mon = time_elements[3];
+		this->time.tm_year = time_elements[4] - 1900;
+		//this->time = time;
 	}
 
 	//constructors
@@ -86,6 +108,7 @@ public:
 		const std::string& time
 	)
 	{
+		this->time = {};
 		set_violation_id(violation_id);
 		set_place(place);
 		set_time(time); 
@@ -101,167 +124,13 @@ public:
 	}
 };
 
-//std::ostream& operator<<(std::ostream& os, const Crime& obj)
-//{
-//	return os << obj.get_time() << ":\t" << obj.get_place() << " - " << obj.get_violation();
-//}
-
 std::ostream& operator<<(std::ostream& os, const Crime& obj)
 {
-	return os << "Time: " << obj.get_time() << "\t Place: " << obj.get_place() << " - Violation №" << obj.get_violation_id() << " " << obj.get_violation();
+	return os << obj.get_time() << ":\t" << obj.get_place() << " - " << obj.get_violation();
 }
 
-void Save(std::map<std::string, std::list<Crime>>& base, const std::string& filename)
-{
-	std::ofstream fout(filename);
-	for (std::map<std::string, std::list<Crime>>::iterator map_it = base.begin(); map_it != base.end(); ++map_it)
-	{
-		fout << "Plate: " << map_it->first << ":\n";
-		for (std::list<Crime>::iterator it = map_it->second.begin(); it != map_it->second.end(); ++it)
-		{
-			fout << "\t" << *it << endl;
-		}
-		fout << delimiter << endl;
-	}
-	fout.close();
-}
-
-bool If_plates(std::string& str)
-{
-	for (int i = 0; i < str.size(); ++i)
-	{		
-		if (str[i] == 'P')
-		{
-			if (str[i + 1] == 'l')
-			{
-				if (str[i + 2] == 'a')
-				{
-					if (str[i + 3] == 't')
-					{
-						if (str[i + 4] == 'e')
-						{							
-							if (str[i + 5] == ':')
-							{
-								return true;
-							}							
-						}
-					}
-				}
-			}
-		}
-	}
-	return false;
-}
-
-bool If_time(std::string& str)
-{
-	for (int i = 0; i < str.size(); ++i)
-	{
-		if (str[i] == 'T')
-		{
-			if (str[i + 1] == 'i')
-			{
-				if (str[i + 2] == 'm')
-				{
-					if (str[i + 3] == 'e')
-					{
-						if (str[i + 4] == ':')
-						{
-							return true;
-						}
-					}
-				}
-			}
-		}
-	}
-	return false;
-}
-
-int Sym_position(std::string& str)
-{
-	for (int i = 0; i < str.size(); ++i)
-	{
-		if (str[i] == '-')return i;
-	}
-	return 0;
-}
-
-int Id_return(std::string& str)
-{
-	if (str == "1 ")return 1;
-	if (str == "2 ")return 2;
-	if (str == "3 ")return 3;
-	if (str == "4 ")return 4;
-	if (str == "5 ")return 5;
-	if (str == "6 ")return 6;
-	if (str == "7 ")return 7;
-	if (str == "8 ")return 8;
-	if (str == "9 ")return 9;
-	if (str == "10")return 10;
-	if (str == "11")return 11;
-	if (str == "12")return 12;
-	if (str == "13")return 13;
-	if (str == "14")return 14;
-	if (str == "15")return 15;
-	if (str == "16")return 16;	
-	return 0;
-}
-
-void Load(std::map<std::string, std::list<Crime>>& base, const std::string& filename)
-{
-	int sw = 0;
-	std::string Plates;
-	std::string Time;
-	std::string Place;
-	std::string Violation;
-	int id = 0;
-
-	std::ifstream fin(filename);
-	if (fin.is_open())
-	{
-		auto mapItr = base.rbegin();
-
-		while (!fin.eof())
-		{
-			std::string buffer;
-			std::getline(fin, buffer);			
-			
-			++sw;
-
-			if (If_plates(buffer))
-			{
-				Plates = buffer.substr(7, 6);
-				sw = 0;
-			}			
-			
-			if (If_time(buffer))
-			{
-				Time = buffer.substr(6, 17);
-				Place = buffer.substr(31, Sym_position(buffer) - 32);
-				Violation = buffer.substr(Sym_position(buffer) + 13, 2);				
-				id = Id_return(Violation);				
-			}
-
-			if (sw == 1)
-			{				
-				base.insert(std::pair<std::string, std::list<Crime>>(Plates, { Crime(id, Place, Time) }));				
-			}			
-
-			if (sw > 1 && If_time(buffer))
-			{
-				mapItr->second.push_back(Crime(id, Place, Time));
-			}			
-		}		
-
-		fin.clear();
-		fin.seekg(0);
-		fin.close();
-	}
-	else
-	{
-		std::cerr << "Error: File not found" << endl;
-	}
-}
+void print(const std::map<std::string, std::list<Crime>>& base);
+void save(const std::map<std::string, std::list<Crime>>& base, const std::string filename);
 
 void main()
 {
@@ -272,27 +141,47 @@ void main()
 
 	std::map<std::string, std::list<Crime>> base =
 	{
-		//{"a777bb", {Crime(1, "ул. Ленина", "18:10 01.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
-		//{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 01.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
-		//{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 01.08.2024"), Crime(9,"ул. Пролетарская", "21:50 01.08.2024"), Crime(11,"ул. Пролетарская", "21:50 01.08.2024"), Crime(12,"ул. Пролетарская", "22:05 01.08.2024")}},
-	};
-
-    Load(base, "FILE.txt");
+		{"a777bb", {Crime(1, "ул. Ленина", "18:10 1.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
+		{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 1.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
+		{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 1.08.2024"), Crime(9,"ул. Пролетарская", "21:50 1.08.2024"), Crime(11,"ул. Пролетарская", "21:50 1.08.2024"), Crime(12,"ул. Пролетарская", "22:05 1.08.2024")}},
+	};    
 		
+	print(base);
+	save(base, "base.txt");
+}
+
+void print(const std::map<std::string, std::list<Crime>>& base)
+{
 	cout << delimiter << endl;
-	for (
-		std::map<std::string, std::list<Crime>>::iterator map_it = base.begin();
+	for (std::map<std::string, std::list<Crime>>::const_iterator map_it = base.begin();
 		map_it != base.end();
-		++map_it
-		)
+		++map_it)
 	{
 		cout << map_it->first << ":\n";
-		for (std::list<Crime>::iterator it = map_it->second.begin(); it != map_it->second.end(); ++it)
+		for (std::list<Crime>::const_iterator it = map_it->second.begin(); it != map_it->second.end(); ++it)
 		{
 			cout << "\t" << *it << endl;
 		}
 		cout << delimiter << endl;
 	}
+}
 
-	//Save(base, "FILE.txt");
+void save(const std::map<std::string, std::list<Crime>>& base, const std::string filename)
+{
+	std::ofstream fout(filename);
+	fout << delimiter << endl;
+	for (std::map<std::string, std::list<Crime>>::const_iterator map_it = base.begin();
+		map_it != base.end();
+		++map_it)
+	{
+		fout << map_it->first << ":\n";
+		for (std::list<Crime>::const_iterator it = map_it->second.begin(); it != map_it->second.end(); ++it)
+		{
+			fout << "\t" << *it << endl;
+		}
+		fout << delimiter << endl;
+	}
+	fout.close();
+	std::string command = "notepad " + filename;
+	system(command.c_str());
 }
