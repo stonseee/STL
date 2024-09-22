@@ -136,6 +136,10 @@ public:
 	{
 		time = *localtime(&timestamp);
 	}
+	void set_time(tm time)
+	{
+		this->time = time;
+	}
 
 	//constructors
 	Crime
@@ -188,6 +192,8 @@ int menu();
 void print(const std::map<std::string, std::list<Crime>>& base);
 void save(const std::map<std::string, std::list<Crime>>& base, const std::string filename);
 std::map<std::string, std::list<Crime>> load(const std::string& filename);
+void personal(const std::map<std::string, std::list<Crime>>& base);
+void add(std::map<std::string, std::list<Crime>>& base);
 
 void main()
 {
@@ -196,18 +202,23 @@ void main()
 	//Crime crime(1, "ул. Ленина", "18:10 1.09.2024");
 	//cout << crime << endl;
 
-	/*std::map<std::string, std::list<Crime>> base =
-	{
-		{"a777bb", {Crime(1, "ул. Ленина", "18:10 1.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
-		{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 1.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
-		{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 1.08.2024"), Crime(9,"ул. Пролетарская", "21:50 1.08.2024"), Crime(11,"ул. Пролетарская", "21:50 1.08.2024"), Crime(12,"ул. Пролетарская", "22:05 1.08.2024")}},
-	};  */  
+	//std::map<std::string, std::list<Crime>> base =
+	//{
+	//	{"a777bb", {Crime(1, "ул. Ленина", "18:10 1.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
+	//	{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 1.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
+	//	{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 1.08.2024"), Crime(9,"ул. Пролетарская", "21:50 1.08.2024"), Crime(11,"ул. Пролетарская", "21:50 1.08.2024"), Crime(12,"ул. Пролетарская", "22:05 1.08.2024")}},
+	//};    
 		
 	//print(base);
 	//save(base, "base.txt");
 	
 	std::map<std::string, std::list<Crime>> base = load("base.txt");
 	
+	//print(base);
+	//add(base);
+	//print(base);
+	//personal(base);
+
 	do
 	{
 		switch (menu())		
@@ -216,15 +227,18 @@ void main()
 		case 1: base = load("base.txt");
 		case 2: save(base, "base.txt");
 		case 3: print(base); 
-		case 4: cout << "soon" << endl;
-		case 5: cout << "soon" << endl;
+		case 4: add(base);
+		case 5: personal(base);
 		}
 	} while (true);
+
+	
+	
 }
 
 int menu()
 {
-	int selected_item = 1; 
+	int selected_item = 1;
 	char key;
 	do
 	{
@@ -236,11 +250,11 @@ int menu()
 			cout << i << ". ";
 			cout.width(32);
 			cout << std::left;
-			if(i==selected_item)SetConsoleTextAttribute(hConsole, 0x70);
+			if (i == selected_item)SetConsoleTextAttribute(hConsole, 0x70);
 			cout << MENU_ITEMS.at(i);
 			SetConsoleTextAttribute(hConsole, 0x07);
 			cout << (i == selected_item ? "  ]" : " ");
-			cout << endl;			
+			cout << endl;
 		}
 		key = _getch();
 
@@ -334,3 +348,51 @@ std::map<std::string, std::list<Crime>> load(const std::string& filename)
 	}
 	return base;
 }
+
+void personal(const std::map<std::string, std::list<Crime>>& base)
+{
+	std::string parameter;
+	cin >> parameter;	
+
+	std::map<std::string, std::list<Crime>>::const_iterator map_it = base.find(parameter);
+		
+	cout << map_it->first << ":\n";
+	for (std::list<Crime>::const_iterator it = map_it->second.begin(); it != map_it->second.end(); ++it)
+	{
+		cout << "\t" << *it << endl;
+	}
+	cout << delimiter << endl;	
+}
+
+void add(std::map<std::string, std::list<Crime>>& base)
+{
+	std::string plates;
+	std::string parameter;
+	tm time;
+	int integer;
+	cout << "Insert plates:"; cin >> plates;
+	Crime crime(0, "place", "00:00 01.01.2000");	
+	
+	cout << "Insert violation id:"; cin >> integer;
+	crime.set_violation_id(integer);
+	cout << "Insert place:"; cin >> parameter;
+	crime.set_place(parameter);
+	cout << "Insert time:" << endl;
+	cout << "Insert hour:"; cin >> integer;	
+	time.tm_hour = integer;
+	cout << "Insert min:"; cin >> integer;
+	time.tm_min = integer;
+	cout << "Insert day:"; cin >> integer;
+	time.tm_mday = integer;
+	cout << "Insert mon:"; cin >> integer;
+	time.tm_mon = integer - 1;
+	cout << "Insert year:"; cin >> integer;
+	time.tm_year = integer - 1900;
+	crime.set_time(time);	
+
+	std::map<std::string, std::list<Crime>>::iterator map_it = base.find(plates);	
+
+	if (map_it != base.end()) map_it->second.push_back(crime);
+	else base.insert(map_it, std::pair<std::string, std::list<Crime>>(plates, {crime}));
+}
+	
