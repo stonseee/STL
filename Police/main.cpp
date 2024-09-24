@@ -202,38 +202,36 @@ void main()
 	//Crime crime(1, "ул. Ленина", "18:10 1.09.2024");
 	//cout << crime << endl;
 
-	//std::map<std::string, std::list<Crime>> base =
-	//{
-	//	{"a777bb", {Crime(1, "ул. Ленина", "18:10 1.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
-	//	{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 1.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
-	//	{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 1.08.2024"), Crime(9,"ул. Пролетарская", "21:50 1.08.2024"), Crime(11,"ул. Пролетарская", "21:50 1.08.2024"), Crime(12,"ул. Пролетарская", "22:05 1.08.2024")}},
-	//};    
+	std::map<std::string, std::list<Crime>> base =
+	{
+		//{"a777bb", {Crime(1, "ул. Ленина", "18:10 1.09.2024"), Crime(2,"пл. Свободы", "12:25 20.08.2024")}},
+		//{"a000bb", {Crime(6, "ул. Космонавтов", "17:50 1.08.2024"), Crime(8,"ул. Космонавтов", "17:45 01.08.2024")}},
+		//{"a001аа", {Crime(10, "ул. Пролетарская", "21:50 1.08.2024"), Crime(9,"ул. Пролетарская", "21:50 1.08.2024"), Crime(11,"ул. Пролетарская", "21:50 1.08.2024"), Crime(12,"ул. Пролетарская", "22:05 1.08.2024")}},
+	};    
 		
 	//print(base);
 	//save(base, "base.txt");
 	
-	std::map<std::string, std::list<Crime>> base = load("base.txt");
+	//std::map<std::string, std::list<Crime>> base = load("base.txt");
+	//std::map<std::string, std::list<Crime>> base;
 	
 	//print(base);
 	//add(base);
 	//print(base);
 	//personal(base);
-
+	
 	do
-	{
+	{		
 		switch (menu())		
 		{
 		case 0: return;
-		case 1: base = load("base.txt");
-		case 2: save(base, "base.txt");
-		case 3: print(base); 
-		case 4: add(base);
-		case 5: personal(base);
+		case 1: base = load("base.txt"); break;
+		case 2: save(base, "base.txt");  break;
+		case 3: print(base); 			 break;
+		case 4: add(base);				 break;
+		case 5: personal(base); 		 break;
 		}
-	} while (true);
-
-	
-	
+	} while (true);	
 }
 
 int menu()
@@ -361,7 +359,8 @@ void personal(const std::map<std::string, std::list<Crime>>& base)
 	{
 		cout << "\t" << *it << endl;
 	}
-	cout << delimiter << endl;	
+	cout << delimiter << endl;		
+	system("PAUSE");
 }
 
 void add(std::map<std::string, std::list<Crime>>& base)
