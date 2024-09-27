@@ -60,7 +60,7 @@ const std::map<int, std::string> VIOLATIONS =
 	{13, "Внесение изменений в конструкцию автомобиля"},
 	{14, "Перевозка негабаритного груза"},
 	{15, "Превышение максимальной нагрузки на ось"},
-	{16, "Перевозка ребенка без кресла"}
+	{16, "Перевозка ребенка без кресла"},
 };
 
 class Crime
@@ -269,6 +269,41 @@ int menu()
 	return 0;
 }
 
+int violation_menu()
+{
+	int selected_item = 1;
+	char key;
+	do
+	{
+		system("CLS");
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		for (int i = 1; i <= VIOLATIONS.size() - 1; i++)
+		{
+			cout << (i == selected_item ? "[" : " ");
+			cout << i << ". ";
+			cout.width(32);
+			cout << std::left;
+			if (i == selected_item)SetConsoleTextAttribute(hConsole, 0x70);
+			cout << VIOLATIONS.at(i);
+			SetConsoleTextAttribute(hConsole, 0x07);
+			cout << (i == selected_item ? "  ]" : " ");
+			cout << endl;
+		}
+		key = _getch();
+
+		switch (key)
+		{
+		case UP_ARROW: /*if (selected_item > 1)*/selected_item--; break;
+		case DOWN_ARROW: /*if (selected_item < MENU_ITEMS.size())*/selected_item++; break;
+		case Enter: return selected_item;
+		case Escape: return 0;
+		}
+		if (selected_item == VIOLATIONS.size() + 1)selected_item = 1;
+		if (selected_item == 0)selected_item = VIOLATIONS.size();
+	} while (key != Escape);
+	return 0;
+}
+
 void print(const std::map<std::string, std::list<Crime>>& base)
 {
 	cout << delimiter << endl;
@@ -368,12 +403,11 @@ void add(std::map<std::string, std::list<Crime>>& base)
 	std::string plates;
 	std::string parameter;
 	tm time;
-	int integer;
+	int integer = 0;
 	cout << "Insert plates:"; cin >> plates;
-	Crime crime(0, "place", "00:00 01.01.2000");	
+	Crime crime(0, "place", "00:00 01.01.2000");		
 	
-	cout << "Insert violation id:"; cin >> integer;
-	crime.set_violation_id(integer);
+	crime.set_violation_id(violation_menu());
 	cout << "Insert place:"; cin >> parameter;
 	crime.set_place(parameter);
 	cout << "Insert time:" << endl;
